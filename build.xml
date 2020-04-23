@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Wsimport1.0" default="war">
+
+	<target name="clean">
+		<delete dir="build" />
+	</target>
+
+	<target name="init" depends="clean">
+		<mkdir dir="build" />
+	</target>
+
+	<target name="import" depends="init">
+		<mkdir dir="build/classes" />
+		<exec executable="wsimport">
+			<arg value="-keep" />
+			<arg value="-s" />
+			<arg path="src" />
+			<arg value="-d" />
+			<arg path="build/classes" />
+			<arg path="C:/Users/komatlap/Desktop/WsimportSample/WebContent/wsdl/" />
+		</exec>
+	</target>
+
+	<target name="jar" depends="import">
+		<mkdir dir="build/lib" />
+		<jar basedir="build/classes" jarfile="build/lib/calc.jar" />
+	</target>
+
+	<target name="war" depends="jar">
+		<!-- Compile implementation class -->
+		<javac srcdir="src\com\source\port" destdir="build/classes" debug="true" fork="true" memoryinitialsize="512m" memorymaximumsize="1024m">
+			<classpath>
+				<pathelement location="build/lib/Calc.jar" />
+			</classpath>
+		</javac>
+
+		<!-- Create web service war file -->
+		<war destfile="build/lib/Calc.war" webxml="WebContent/WEB-INF/web.xml"  includesfile="WebContent\wsdl\*.wsdl">
+			<fileset dir="WebContent" includes="WEB-INF/classes/com,
+						wsdl/*.wsdl">
+			</fileset>
+			<classes dir="build/classes" />
+			<lib dir="build/lib" />
+		</war>
+	</target>
+
+</project>
